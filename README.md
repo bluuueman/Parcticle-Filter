@@ -37,7 +37,7 @@ cv2.putText(img, "Robot Estimated Position", (30, 80), 1, 1.0, (0, 0, 255))
 * 修改update函数中particle的权重计算方式
 ```python
 #line96
-weights *= scipy.stats.pareto(1).pdf(0.1*abs(z[i]-distance)+1，1)
+weights *= scipy.stats.pareto.pdf(0.1*abs(z[i]-distance)+1,1)
 ```
 由于帕累托分布中x大于等于1，令
 `x=abs(z[i]-distance)+1`
