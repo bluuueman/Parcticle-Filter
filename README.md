@@ -7,11 +7,11 @@ a localization algorithm based on particle filter<br>
   3.更新粒子权重（update）：根据粒子和robot的相对距离(参照地标)，更新权重<br>
   4.重采样（resample）：增加高权值粒子数量，减少低权值粒子数<br>
   5.估计robot位置（estimate）：通过粒子位置的加权平均数可计算出robot的大致位置。<br>
-  6.在robot运动过程中重复2到5<br>
+  6.在robot运动过程中重复2到5步骤<br>
 
-### 基于particle位置，计算最终定位robot的唯一位置并输出到屏幕
+### 问题1：基于particle位置，计算最终定位robot的唯一位置并输出到屏幕
 
-* 采用加权平均数计算particle位置得出robot最终位置
+* estimate函数采用加权平均数计算particle位置得出robot最终位置
 ```python
 #line127-line131
 def estimate(particles, weights):
@@ -32,7 +32,7 @@ cv2.circle(img, (10, 75), 4, (0, 0, 255), -1)
 cv2.putText(img, "Robot Estimated Position", (30, 80), 1, 1.0, (0, 0, 255))
 ```
 
-### 采用帕累托分布代替正态分布修改权重
+### 问题2：采用帕累托分布代替正态分布修改权重
 
 * 修改update函数中particle的权重计算方式
 ```python
@@ -44,7 +44,7 @@ weights *= scipy.stats.pareto(1).pdf(0.1*abs(z[i]-distance)+1，1)
 同时为了保证粒子多样性，使结果更加准确，在绝对值前乘以系数0.1即
 `x=0.1*abs(z[i]-distance)+1`
 
-### landmark和robot的距离增加随机误差
+### 问题3：landmark和robot的距离增加随机误差
 
 * 原本代码中已包含随机误差
 ```python
