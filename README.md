@@ -22,7 +22,7 @@ def estimate(particles, weights):
 #line177
 estimate_position=estimate(particles,weights)
 ```
-* 输出到屏幕
+* 输出到屏幕，显示为一个红色的圆点
 ```python
 #line178
 cv2.circle(img, ((int(estimate_position[0])),(int(estimate_position[1]))), 4,(0,0,255), -1)
