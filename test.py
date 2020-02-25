@@ -175,15 +175,15 @@ while (1):
         break
 
     estimate_position=estimate(particles,weights)
-    cv2.circle(img, ((int(estimate_position[0])),(int(estimate_position[1]))), 4,(0,0,255), -1)
+    cv2.circle(img, ((int(estimate_position[0])),(int(estimate_position[1]))), 4,(0,0,255), -1)#显示estimate position具体位置
 
     cv2.circle(img, (10, 10), 10, (255, 0, 0), -1)
     cv2.circle(img, (10, 30), 3, (255, 255, 255), -1)
-    cv2.circle(img, (10, 75), 4, (0, 0, 255), -1)
+    cv2.circle(img, (10, 75), 4, (0, 0, 255), -1)#显示estimate position图标
     cv2.putText(img, "Landmarks", (30, 20), 1, 1.0, (255, 0, 0))
     cv2.putText(img, "Particles", (30, 40), 1, 1.0, (255, 255, 255))
     cv2.putText(img, "Robot Trajectory(Ground truth)", (30, 60), 1, 1.0, (0, 255, 0))
-    cv2.putText(img, "Robot Estimated Position", (30, 80), 1, 1.0, (0, 0, 255))
+    cv2.putText(img, "Robot Estimated Position", (30, 80), 1, 1.0, (0, 0, 255))#显示estimate position的文字
     drawLines(img, np.array([[10, 55], [25, 55]]), 0, 255, 0)
 
 
