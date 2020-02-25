@@ -13,16 +13,22 @@ a localization algorithm based on particle filter<br>
 
 * 采用加权平均数计算particle位置得出robot最终位置
 ```python
+#line127-line131
 def estimate(particles, weights):
     pos = particles[:, 0:2]
     mean = np.average(pos, weights=weights, axis=0)
     var = np.average((pos - mean) ** 2, weights=weights, axis=0)
     return mean
+#line177
 estimate_position=estimate(particles,weights)
 ```
 * 输出到屏幕
 ```python
+#line178
+cv2.circle(img, ((int(estimate_position[0])),(int(estimate_position[1]))), 4,(0,0,255), -1)
+#line182
 cv2.circle(img, (10, 75), 4, (0, 0, 255), -1)
+#line186
 cv2.putText(img, "Robot Estimated Position", (30, 80), 1, 1.0, (0, 0, 255))
 ```
 
@@ -30,6 +36,7 @@ cv2.putText(img, "Robot Estimated Position", (30, 80), 1, 1.0, (0, 0, 255))
 
 * 修改update函数中particle的权重计算方式
 ```python
+#line96
 weights *= scipy.stats.pareto(1).pdf(0.1*abs(z[i]-distance)+1，1)
 ```
 由于帕累托分布中x大于等于1，令
@@ -41,10 +48,12 @@ weights *= scipy.stats.pareto(1).pdf(0.1*abs(z[i]-distance)+1，1)
 
 * 原本代码中已包含随机误差
 ```python
+#line52
 zs = (np.linalg.norm(landmarks - center, axis=1) + (np.random.randn(NL) * sensor_std_err))
 ```
 * 原代码中关于重采样的粒子也已包含噪声
 ```python
+#line81
 dist = (u[1] * dt) + (np.random.randn(N) * std[1])
 ```
 
@@ -54,6 +63,7 @@ dist = (u[1] * dt) + (np.random.randn(N) * std[1])
 
 * 由于环境使用的opencv版本为4.x，对部分版本相关代码有所修改
 ```python
+#line19
 LINE_AA = cv2.LINE_AA if cv2.__version__[0] == '4' else cv2.CV_AA
 ```
 ### 可能的优化
