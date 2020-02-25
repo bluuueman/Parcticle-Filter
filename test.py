@@ -48,6 +48,7 @@ def mouseCallback(event, x, y, flags, null):
         std = np.array([2, 4])
         u = np.array([heading, distance])
         predict(particles, u, std, dt=1.)
+        #robot和landmark之间的距离，其中 np.random.randn(NL) * sensor_std_err 为随机误差
         zs = (np.linalg.norm(landmarks - center, axis=1) + (np.random.randn(NL) * sensor_std_err))
         update(particles, weights, z=zs, R=50, landmarks=landmarks)
 
@@ -67,33 +68,41 @@ WINDOW_NAME = "Particle Filter"
 
 sensor_std_err = 5
 
-
+#生成粒子
 def create_uniform_particles(x_range, y_range, N):
     particles = np.empty((N, 2))
     particles[:, 0] = uniform(x_range[0], x_range[1], size=N)
     particles[:, 1] = uniform(y_range[0], y_range[1], size=N)
     return particles
 
-
+#预测系统状态：更新粒子位置
 def predict(particles, u, std, dt=1.):
     N = len(particles)
     dist = (u[1] * dt) + (np.random.randn(N) * std[1])
     particles[:, 0] += np.cos(u[0]) * dist
     particles[:, 1] += np.sin(u[0]) * dist
 
-
+#更新粒子权重
 def update(particles, weights, z, R, landmarks):
     weights.fill(1.)
     for i, landmark in enumerate(landmarks):
         distance = np.power((particles[:, 0] - landmark[0]) ** 2 + (particles[:, 1] - landmark[1]) ** 2, 0.5)
-        weights *= scipy.stats.norm(distance, R).pdf(z[i])
+        '''
+        权值通过正态分布进行修正，若使用帕累托分布代码改为以下
+        weights *= scipy.stats.pareto(1).pdf(0.1*abs(z[i]-distance)+1，1)
+        说明：因为帕累托分布x大于等于1，因此令x=0.1*abs(z[i]-distance)+1,差值乘以0.1因为该分布较为集中在[1,2]之间
+        实际移动范围却远大于1，乘以0.1保证了粒子多样性，对位置的估计更准确
+        '''
+        weights *= scipy.stats.norm(distance,R).pdf(z[i])
 
     weights += 1.e-300  # avoid round-off to zero
     weights /= sum(weights)
 
+#判断粒子有效性，可以在粒子有效性低于一定阈值时才进行重采样，可以保证粒子多样性
 def neff(weights):
     return 1. / np.sum(np.square(weights))
 
+#对粒子根据与robot的相对距离进行重采样
 def systematic_resample(weights):
     N = len(weights)
     positions = (np.arange(N) + np.random.random()) / N
@@ -109,18 +118,17 @@ def systematic_resample(weights):
             j += 1
     return indexes
 
+def resample_from_index(particles, weights, indexes):
+    particles[:] = particles[indexes]
+    weights[:] = weights[indexes]
+    weights /= np.sum(weights)
 
+#通过粒子位置的加权平均数估计robot位置
 def estimate(particles, weights):
     pos = particles[:, 0:2]
     mean = np.average(pos, weights=weights, axis=0)
     var = np.average((pos - mean) ** 2, weights=weights, axis=0)
     return mean
-
-
-def resample_from_index(particles, weights, indexes):
-    particles[:] = particles[indexes]
-    weights[:] = weights[indexes]
-    weights /= np.sum(weights)
 
 
 x_range = np.array([0, 800])
@@ -175,7 +183,7 @@ while (1):
     cv2.putText(img, "Landmarks", (30, 20), 1, 1.0, (255, 0, 0))
     cv2.putText(img, "Particles", (30, 40), 1, 1.0, (255, 255, 255))
     cv2.putText(img, "Robot Trajectory(Ground truth)", (30, 60), 1, 1.0, (0, 255, 0))
-    cv2.putText(img, "Robot Estimate Position", (30, 80), 1, 1.0, (0, 0, 255))
+    cv2.putText(img, "Robot Estimated Position", (30, 80), 1, 1.0, (0, 0, 255))
     drawLines(img, np.array([[10, 55], [25, 55]]), 0, 255, 0)
 
 
