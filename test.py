@@ -89,7 +89,7 @@ def update(particles, weights, z, R, landmarks):
         distance = np.power((particles[:, 0] - landmark[0]) ** 2 + (particles[:, 1] - landmark[1]) ** 2, 0.5)
         '''
         权值通过正态分布进行修正，若使用帕累托分布代码改为以下
-        weights *= scipy.stats.pareto(1).pdf(0.1*abs(z[i]-distance)+1，1)
+        weights *= scipy.stats.pareto.pdf(0.1*abs(z[i]-distance)+1,1)
         说明：因为帕累托分布x大于等于1，因此令x=0.1*abs(z[i]-distance)+1,差值乘以0.1因为该分布较为集中在[1,2]之间
         实际移动范围却远大于1，乘以0.1保证了粒子多样性，对位置的估计更准确
         '''
