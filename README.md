@@ -5,8 +5,8 @@ a localization algorithm based on particle filter<br>
   1.随机生成粒子（create）<br>
   2.预测状态（predict）：robot移动后同步更新粒子状态<br>
   3.更新粒子权重（update）：根据粒子和robot的相对距离(参照地标)，更新权重<br>
-  4.重采样（resample）：增加高权值粒子数量，减少低权值粒子数<br>
-  5.估计robot位置（estimate）：通过粒子位置的加权平均数可计算出robot的大致位置。<br>
+  4.估计robot位置（estimate）：通过粒子位置的加权平均数可计算出robot的大致位置。<br>
+  5.重采样（resample）：增加高权值粒子数量，减少低权值粒子数<br>
   6.在robot运动过程中重复2到5步骤<br>
 
 ### 问题1：基于particle位置，计算最终定位robot的唯一位置并输出到屏幕
